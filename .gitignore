@@ -1,0 +1,43 @@
+# === CloudFormation specific ===
+
+# Output of 'aws cloudformation package'
+packaged.yml
+packaged-*.yml
+
+# CloudFormation change set/plan files (if generated)
+*.changeset.json
+*.template.json
+
+# Parameter files that may contain sensitive values
+*.parameters.json
+*.env.json
+*.env.yml
+
+# SAM/Serverless Framework (if used)
+.aws-sam/
+.serverless/
+
+# CDK (if used)
+cdk.out/
+
+# === General ===
+
+# MacOS junk
+.DS_Store
+
+# Editor/IDE settings
+.vscode/
+.idea/
+
+# Python (if using scripts/tools)
+__pycache__/
+*.py[cod]
+*.egg-info/
+
+# Node.js (if using CDK or tooling)
+node_modules/
+
+# Logs and temp
+*.log
+*.tmp
+*.bak
