@@ -12,6 +12,7 @@ Resources:
         - Key: Name
           Value: NebulaNet
 
+# Internet Gateway for Public Subnet's Internet Access 
   InternetGateway:
     Type: AWS::EC2::InternetGateway
     Properties:
@@ -27,6 +28,7 @@ Resources:
       InternetGatewayId:
         Ref: InternetGateway
 
+# Route Table for Public Subnets
   RouteTable:
     Type: AWS::EC2::RouteTable
     Properties:
@@ -45,6 +47,7 @@ Resources:
       DestinationCidrBlock: 0.0.0.0/0
       GatewayId: !Ref InternetGateway
 
+# Public Subnets
   PublicSubnet1:
     Type: AWS::EC2::Subnet
     Properties:
@@ -77,7 +80,8 @@ Resources:
       Tags:
         - Key: Name
           Value: public-subnet-3
-  
+
+# Association from Public Subnets to Route Table  
   SubnetRouteTableAssociation1:
     Type: AWS::EC2::SubnetRouteTableAssociation
     Properties:
@@ -101,3 +105,92 @@ Resources:
         Ref: PublicSubnet3
       RouteTableId:
         Ref: RouteTable
+
+
+
+
+
+# Route Table for Private Subnets
+  PrivateRouteTable:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref VPC
+      Tags:
+        - Key: Name
+          Value: private-rt
+
+  PrivateRoute:
+    Type: AWS::EC2::Route
+    Properties:
+      RouteTableId: !Ref PrivateRouteTable
+      DestinationCidrBlock: 0.0.0.0/0
+      NatGatewayId: !Ref NATGateway
+
+# Elastic IP for NAT Gateway     <--- Move later to EC2.yml Template
+  NATEIP:
+    Type: AWS::EC2::EIP
+    Properties: 
+      Domain: VPC
+
+# NAT Gateway
+  NATGateway:
+    Type: AWS::EC2::NatGateway
+    Properties:
+      AllocationId: !GetAtt NATEIP.AllocationId
+      SubnetId: !Ref PublicSubnet1
+      Tags:
+      - Key: Stack
+        Value: Production
+
+# Private Subnets
+  PrivateSubnet1:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref VPC
+      CidrBlock: 10.0.101.0/24
+      AvailabilityZone: !Select [0, !GetAZs '']
+      Tags:
+        - Key: Name
+          Value: private-subnet-1
+
+  PrivateSubnet2:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref VPC
+      CidrBlock: 10.0.102.0/24
+      AvailabilityZone: !Select [1, !GetAZs '']
+      Tags:
+        - Key: Name
+          Value: private-subnet-2
+
+  PrivateSubnet3:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref VPC
+      CidrBlock: 10.0.103.0/24
+      AvailabilityZone: !Select [2, !GetAZs '']
+      Tags:
+        - Key: Name
+          Value: private-subnet-3
+
+# Association from Private Subnets to Route Table  
+  SubnetPrivateRouteTableAssociation1:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId:
+        Ref: PrivateSubnet1
+      RouteTableId: !Ref PrivateRouteTable
+
+  SubnetPrivateRouteTableAssociation2:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId:
+        Ref: PrivateSubnet2
+      RouteTableId: !Ref PrivateRouteTable
+
+  SubnetPrivateRouteTableAssociation3:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId:
+        Ref: PrivateSubnet3
+      RouteTableId: !Ref PrivateRouteTable
