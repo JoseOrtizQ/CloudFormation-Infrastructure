@@ -194,3 +194,33 @@ Resources:
       SubnetId:
         Ref: PrivateSubnet3
       RouteTableId: !Ref PrivateRouteTable
+
+
+
+
+# Outputs for other files reuse
+Outputs:
+
+  VPC:
+    Description: VPC ID
+    Value: !Ref VPC
+    Export:
+      Name: NebulaNet-VPC
+
+  PublicSubnet1:
+    Description: Public Subnet 1 ID
+    Value: !Ref PublicSubnet1
+    Export:
+      Name: NebulaNet-PublicSubnet1
+
+  PublicSubnet2:
+    Description: Public Subnet 2 ID
+    Value: !Ref PublicSubnet2
+    Export:
+      Name: NebulaNet-PublicSubnet2
+
+  PublicSubnet3:
+    Description: Public Subnet 3 ID
+    Value: !Ref PublicSubnet3
+    Export:
+      Name: NebulaNet-PublicSubnet3

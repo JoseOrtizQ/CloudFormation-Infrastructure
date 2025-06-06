@@ -1,0 +1,36 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: EC2 Resources
+
+Parameters:
+  VPC:
+    Type: AWS::EC2::VPC::Id
+  PublicSubnet1:
+    Type: AWS::EC2::Subnet::Id
+
+Resources:
+  SecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: NebulaNetGuard
+      SecurityGroupIngress: 
+        - IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          CidrIp: 0.0.0.0/0
+      Tags:
+        - Key: Name
+          Value: public-sg
+      VpcId: !Ref VPC
+
+  Instance1:
+    Type: AWS::EC2::Instance
+    Properties:
+      ImageId: ami-05265d002dc5e38d6
+      InstanceType: t2.micro
+      SubnetId: !Ref PublicSubnet1
+      SecurityGroupIds:
+        - !Ref SecurityGroup
+      KeyName: nebulaKey
+      Tags:
+        - Key: Name
+          Value: MyPublicEC2
