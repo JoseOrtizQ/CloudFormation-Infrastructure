@@ -34,3 +34,16 @@ Resources:
       Tags:
         - Key: Name
           Value: MyPublicEC2
+
+  Instance2:
+    Type: AWS::EC2::Instance
+    Properties:
+      ImageId: ami-05265d002dc5e38d6
+      InstanceType: t2.micro
+      SubnetId: !Ref PublicSubnet1
+      SecurityGroupIds:
+        - !Ref SecurityGroup
+      KeyName: nebulaKey
+      Tags:
+        - Key: Name
+          Value: MyPublicEC2

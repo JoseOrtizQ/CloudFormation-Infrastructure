@@ -198,7 +198,7 @@ Resources:
 
 
 
-# Outputs for other files reuse
+# Outputs for other files to reuse
 Outputs:
 
   VPC:
