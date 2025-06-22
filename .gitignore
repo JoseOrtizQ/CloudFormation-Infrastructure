@@ -13,6 +13,9 @@ packaged-*.yml
 *.env.json
 *.env.yml
 
+# Private keys
+*.pem
+
 # SAM/Serverless Framework (if used)
 .aws-sam/
 .serverless/
