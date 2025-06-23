@@ -1,0 +1,82 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'NebulaNet Master Stack - Orchestrates VPC and EC2 Infrastructure'
+
+Parameters:
+  TemplateBucketVersion:
+    Type: String
+    Description: S3 bucket containing nested CloudFormation templates
+    Default: nebulanet-cloudformation-templates
+  
+  Environment:
+    Type: String
+    Default: production
+    AllowedValues: [development, staging, production]
+    Description: Environment name for resource tagging
+  
+  KeyPairName:
+    Type: String
+    Default: nebulaKey
+    Description: EC2 Key Pair name for SSH access
+
+Resources:
+  # VPC Stack - Creates the complete networking infrastructure
+  VPCStack:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: https://s3.ca-central-1.amazonaws.com/cf-template-test.v75.5/vpc.yml
+
+  # EC2 Stack - Creates compute resources that depend on VPC
+  EC2Stack:
+    Type: AWS::CloudFormation::Stack
+    DependsOn: VPCStack
+    Properties:
+      TemplateURL: https://s3.ca-central-1.amazonaws.com/cf-template-test.v75.5/ec2.yml
+      Parameters:
+        VPC: !GetAtt VPCStack.Outputs.VPC
+        PublicSubnet1: !GetAtt VPCStack.Outputs.PublicSubnet1
+
+Outputs:
+  # VPC Related Outputs
+  VPCId:
+    Description: VPC ID from NebulaNet VPC Stack
+    Value: !GetAtt VPCStack.Outputs.VPC
+    Export:
+      Name: !Sub '${AWS::StackName}-VPCId'
+  
+  PublicSubnet1Id:
+    Description: Public Subnet 1 ID
+    Value: !GetAtt VPCStack.Outputs.PublicSubnet1
+    Export:
+      Name: !Sub '${AWS::StackName}-PublicSubnet1'
+  
+  PublicSubnet2Id:
+    Description: Public Subnet 2 ID
+    Value: !GetAtt VPCStack.Outputs.PublicSubnet2
+    Export:
+      Name: !Sub '${AWS::StackName}-PublicSubnet2'
+  
+  PublicSubnet3Id:
+    Description: Public Subnet 3 ID
+    Value: !GetAtt VPCStack.Outputs.PublicSubnet3
+    Export:
+      Name: !Sub '${AWS::StackName}-PublicSubnet3'
+  
+  # Stack Information
+  VPCStackId:
+    Description: VPC Stack ID
+    Value: !Ref VPCStack
+    Export:
+      Name: !Sub '${AWS::StackName}-VPCStackId'
+  
+  EC2StackId:
+    Description: EC2 Stack ID
+    Value: !Ref EC2Stack
+    Export:
+      Name: !Sub '${AWS::StackName}-EC2StackId'
+  
+  # Infrastructure Summary
+  InfrastructureStatus:
+    Description: NebulaNet Infrastructure Deployment Status
+    Value: !Sub 'NebulaNet ${Environment} infrastructure successfully deployed'
+    Export:
+      Name: !Sub '${AWS::StackName}-Status'
